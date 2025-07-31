@@ -27,7 +27,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository }}:latest
+          tags: ghcr.io/${{ github.repository_owner }}/demo-ci-cd:latest
 
       - name: Echo image pull command
-        run: echo "docker pull ghcr.io/${{ github.repository }}:latest"
+        run: echo "docker pull ghcr.io/${{ github.repository_owner }}/demo-ci-cd:latest"
