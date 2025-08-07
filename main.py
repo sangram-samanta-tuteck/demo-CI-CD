@@ -66,7 +66,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 @app.get("/")
 def read_root():
-    return {"message": "FastAPI with Supabase is running"}
+    return {"message": "FastAPI with Supabase is running well"}
 
 @app.get("/users")
 def get_users():
