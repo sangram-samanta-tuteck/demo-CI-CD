@@ -1,16 +1,65 @@
-from fastapi import FastAPI
+# from fastapi import FastAPI, HTTPException, Request
+# from supabase import create_client, Client
+# import os
+# from dotenv import load_dotenv
+
+# load_dotenv()
+
+
+# SUPABASE_URL = os.getenv("SUPABASE_URL")
+# SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+# # print(f"Using Supabase URL: {SUPABASE_URL}")
+# # print(f"Using Supabase Key: {SUPABASE_KEY[:5]}...")  # only print prefix
+
+# app = FastAPI()
+# supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+# @app.get("/")
+# def read_root():
+#     return {"message": "FastAPI with Supabase is running"}
+
+# @app.get("/users")
+# def get_users():
+#     data = supabase.table("users").select("*").execute()
+#     return data.data
+
+# @app.post("/users")
+# def create_user(user: dict):
+#     data = supabase.table("users").insert(user).execute()
+#     return data.data
+
+# @app.patch("/users/{user_id}")
+# async def update_user(user_id: int, request: Request):
+#     update_data = await request.json()
+
+#     if not update_data:
+#         raise HTTPException(status_code=400, detail="No data provided to update.")
+
+#     try:
+#         response = (
+#             supabase
+#             .table("users")
+#             .update(update_data)
+#             .eq("id", user_id)
+#             .execute()
+#         )
+
+#         if not response.data:
+#             raise HTTPException(status_code=404, detail=f"User with id {user_id} not found.")
+
+#         return response.data
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+from fastapi import FastAPI, Request, HTTPException
 from supabase import create_client, Client
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-
-print(f"Using Supabase URL: {SUPABASE_URL}")
-print(f"Using Supabase Key: {SUPABASE_KEY[:5]}...")  # only print prefix
 
 app = FastAPI()
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -21,10 +70,39 @@ def read_root():
 
 @app.get("/users")
 def get_users():
-    data = supabase.table("users").select("*").execute()
-    return data.data
+    try:
+        response = supabase.table("users").select("*").execute()
+        return response.data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/users")
 def create_user(user: dict):
-    data = supabase.table("users").insert(user).execute()
-    return data.data
+    try:
+        response = supabase.table("users").insert(user).execute()
+        return response.data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.patch("/users/{user_id}")
+async def update_user(user_id: int, request: Request):
+    update_data = await request.json()
+
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No data provided to update.")
+
+    try:
+        response = (
+            supabase
+            .table("users")
+            .update(update_data)
+            .eq("id", user_id)
+            .execute()
+        )
+
+        if not response.data:
+            raise HTTPException(status_code=404, detail=f"User with id {user_id} not found.")
+
+        return response.data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
